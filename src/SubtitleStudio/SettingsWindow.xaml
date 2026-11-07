@@ -1,5 +1,5 @@
 <Window x:Class="SubtitleStudio.SettingsWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
- Title="Settings | Speech to Text" Width="900" Height="800" MinWidth="760" MinHeight="620" WindowStartupLocation="CenterOwner" Background="#F2F5F9" Foreground="#19283E" Closing="WindowClosing">
+ Title="Settings | Speech to Text" Icon="Assets/AppIcon.ico" Width="900" Height="800" MinWidth="760" MinHeight="620" WindowStartupLocation="CenterOwner" Background="#F2F5F9" Foreground="#19283E" Closing="WindowClosing">
  <Window.Resources>
   <ResourceDictionary>
    <ResourceDictionary.MergedDictionaries><ResourceDictionary Source="Styles.xaml"/></ResourceDictionary.MergedDictionaries>

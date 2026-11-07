@@ -1,4 +1,4 @@
-param([ValidatePattern('^\d+\.\d+\.\d+$')][string]$Version = '0.1.4', [switch]$SkipInstaller)
+param([ValidatePattern('^\d+\.\d+\.\d+$')][string]$Version = '0.1.5', [switch]$SkipInstaller)
 $ErrorActionPreference = 'Stop'
 $dist = Join-Path $PSScriptRoot 'dist'
 $publish = Join-Path $dist "package-$Version-win-x64"

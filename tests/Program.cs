@@ -44,6 +44,11 @@ try
     Check(Settings.IsSourceCheckout, "Source checkout root discovery failed.");
     Check(Path.GetFullPath(Settings.ResultsFolder) == Path.Combine(Settings.Root, "artifacts"), "Development results folder changed.");
     Check(Transcriber.Supported("VOICE.MP3") && !Transcriber.Supported("script.exe"), "Media extension validation failed.");
+    using (var iconStream = File.OpenRead(Path.Combine(Settings.Root, "src", "SubtitleStudio", "Assets", "AppIcon.ico")))
+    {
+        var icon = new System.Windows.Media.Imaging.IconBitmapDecoder(iconStream, System.Windows.Media.Imaging.BitmapCreateOptions.PreservePixelFormat, System.Windows.Media.Imaging.BitmapCacheOption.OnLoad);
+        Check(icon.Frames.Count == 7 && icon.Frames.Any(f => f.PixelWidth == 16) && icon.Frames.Any(f => f.PixelWidth == 256), "Windows icon is missing small or high-resolution frames.");
+    }
     if (args.Contains("--ui"))
     {
         Exception? failure = null;
@@ -55,6 +60,7 @@ try
                 var window = new MainWindow();
                 window.Show(); window.UpdateLayout();
                 Check(window.Title.StartsWith("Speech to Text"), "Window product name is incorrect.");
+                Check(window.Icon != null, "App window icon was not loaded.");
                 var list = (System.Windows.Controls.ListBox)window.FindName("ModelList");
                 Check(list.Items.Count == 3, "Model library must display all supported families.");
                 Check(list.SelectedValue is string selected && Transcriber.Models.Contains(selected), "Selected model is missing.");

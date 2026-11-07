@@ -1,3 +1,5 @@
+<img src="src/SubtitleStudio/Assets/AppIcon.png" width="80" height="80" alt="Speech to Text logo">
+
 # Speech to Text
 
 **Fast, private audio and video transcription for Windows.**
@@ -29,7 +31,7 @@ Paste a media path, click **Transcribe**, edit the text, and **Save TXT**. No Py
 
 **[Download the Windows installer](https://github.com/VusalAbdurahmanovX/Speech-to-text/releases/latest)** | **[Portable ZIP and checksums](https://github.com/VusalAbdurahmanovX/Speech-to-text/releases/latest)**
 
-Download **Speech-to-Text-Setup-0.1.4-win-x64.exe** from its GitHub Releases page. Run the installer and launch the app from the Start menu. The installer includes .NET; end users do not need an SDK. A portable ZIP is also generated: extract the entire folder and launch `SubtitleStudio.exe`.
+Download **Speech-to-Text-Setup-0.1.5-win-x64.exe** from its GitHub Releases page. Run the installer and launch the app from the Start menu. The installer includes .NET; end users do not need an SDK. A portable ZIP is also generated: extract the entire folder and launch `SubtitleStudio.exe`.
 
 1. Open **Settings > Tools & paths** and click **Install transcription tools**. The app downloads the official whisper.cpp CUDA build and BtbN's LGPL FFmpeg build directly from upstream. Both archives are checked against upstream SHA-256 digests before extraction.
 2. Select a model and click **Download selected model**. **large-v3-turbo** is recommended for the first run; its Q5_0 model is about 548 MiB. Model downloads are also SHA-256 checked.
@@ -150,7 +152,7 @@ You can also skip `setup.ps1` and use the app's Settings to download tools/model
 ```powershell
 .\package.ps1
 # Override version:
-.\package.ps1 -Version 0.1.4
+.\package.ps1 -Version 0.1.5
 # Portable package only:
 .\package.ps1 -SkipInstaller
 ```
@@ -207,6 +209,7 @@ installer/               Inno Setup script and end-user instructions
 build.ps1 / run.ps1       Development commands
 setup.ps1                Source-development backend/model download
 package.ps1              Self-contained ZIP and Windows setup build
+scripts/New-AppIcon.ps1   Regenerate the original SVG, PNG, and multi-size Windows icon
 ```
 
 ## Contributing

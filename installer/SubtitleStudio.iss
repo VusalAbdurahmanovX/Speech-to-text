@@ -1,8 +1,8 @@
 #ifndef AppVersion
-  #define AppVersion "0.1.4"
+  #define AppVersion "0.1.5"
 #endif
 #ifndef PublishDir
-  #define PublishDir "..\dist\package-0.1.4-win-x64"
+  #define PublishDir "..\dist\package-0.1.5-win-x64"
 #endif
 #ifndef OutputDir
   #define OutputDir "..\dist"
@@ -25,6 +25,7 @@ Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
 LicenseFile=..\LICENSE
+SetupIconFile=..\src\SubtitleStudio\Assets\AppIcon.ico
 UninstallDisplayIcon={app}\SubtitleStudio.exe
 CloseApplications=yes
 RestartApplications=no
