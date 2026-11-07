@@ -9,7 +9,7 @@ public sealed record TranscriptionResult(string Input, string Model, string Back
 
 public sealed class Transcriber
 {
-    public static readonly string[] Models = ["medium", "large-v3", "large-v3-turbo"];
+    public static readonly string[] Models = ["tiny", "medium", "large-v1", "large-v2", "large-v3", "large-v3-turbo"];
     public static bool Supported(string path) => new[] { ".mp4", ".mkv", ".mp3", ".wav", ".m4a" }.Contains(Path.GetExtension(path).ToLowerInvariant());
 
     public async Task<TranscriptionResult> RunAsync(string input, Settings settings, string outputFolder, IProgress<string> progress, CancellationToken token)

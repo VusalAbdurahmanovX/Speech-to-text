@@ -1,8 +1,8 @@
 #ifndef AppVersion
-  #define AppVersion "0.1.5"
+  #define AppVersion "0.1.6"
 #endif
 #ifndef PublishDir
-  #define PublishDir "..\dist\package-0.1.5-win-x64"
+  #define PublishDir "..\dist\package-0.1.6-win-x64"
 #endif
 #ifndef OutputDir
   #define OutputDir "..\dist"

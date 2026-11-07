@@ -2,7 +2,7 @@
 
 1. Open Speech to Text from the Start menu (or SubtitleStudio.exe in the portable folder).
 2. Open **Settings > Tools & paths** and click **Install transcription tools**. This downloads the official CUDA-enabled whisper.cpp build and an LGPL FFmpeg build directly from their upstream GitHub releases. Downloads are SHA-256 checked.
-3. Select **large-v3-turbo**, then **Download selected model**. The initial model is approximately 548 MiB. Tools require approximately 821 MiB of downloads and more disk space after extraction. Allow several GB of free space.
+3. Select **large-v3-turbo**, then **Download selected model**. The initial model is approximately 548 MiB. You can also choose tiny (31 MiB), medium, large-v1, large-v2, or large-v3. Large-v1 downloads the full 2.9 GiB model and needs more memory. Tools require approximately 821 MiB of downloads and more disk space after extraction. Allow several GB of free space.
 4. Choose the spoken language. Turkish (`tr`) is the default. Click **Save changes**.
 5. Select your preferred model in the main **Models** panel. Installed models show their size; other models can be downloaded using **Download selected model**.
 6. Browse for or drop your media file, then click **Transcribe**.

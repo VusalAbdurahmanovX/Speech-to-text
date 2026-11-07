@@ -1,4 +1,4 @@
-param([ValidateSet('medium','large-v3','large-v3-turbo')][string]$Model = 'large-v3-turbo')
+param([ValidateSet('tiny','medium','large-v1','large-v2','large-v3','large-v3-turbo')][string]$Model = 'large-v3-turbo')
 $ErrorActionPreference = 'Stop'
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $toolsFolder = Join-Path $PSScriptRoot 'tools'
@@ -20,9 +20,10 @@ if (-not (Test-Path -LiteralPath $exe)) {
 }
 if (-not (Test-Path -LiteralPath $exe)) { throw 'Expected Release\whisper-cli.exe is missing.' }
 & $exe --help 2>&1 | Out-Host
-$name = "ggml-$Model-q5_0.bin"
-$modelPath = Join-Path $modelsFolder $name
 $metadata = Invoke-RestMethod 'https://huggingface.co/api/models/ggerganov/whisper.cpp/tree/main?limit=1000'
+$name = @("ggml-$Model-q5_0.bin", "ggml-$Model-q5_1.bin", "ggml-$Model.bin") | Where-Object { $_ -in $metadata.path } | Select-Object -First 1
+if (-not $name) { throw "No supported official download is available for $Model." }
+$modelPath = Join-Path $modelsFolder $name
 $entry = $metadata | Where-Object path -eq $name
 if (-not $entry.lfs.oid) { throw 'Official model checksum not found.' }
 if (-not (Test-Path -LiteralPath $modelPath)) {

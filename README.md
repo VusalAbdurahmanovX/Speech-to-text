@@ -20,7 +20,7 @@ Paste a media path, click **Transcribe**, edit the text, and **Save TXT**. No Py
 - Fast NVIDIA CUDA transcription with verified GPU use; CPU mode is available by explicit selection.
 - Local processing with no cloud API, API key, or recording upload.
 - MP3, WAV, M4A, MP4, and MKV input with automatic FFmpeg audio preparation.
-- Select and download medium, large-v3, or large-v3-turbo from the model library.
+- Select and download tiny, medium, large-v1, large-v2, large-v3, or large-v3-turbo from the model library.
 - Editable transcripts, automatic TXT/SRT output, live progress, and cancellation.
 - Self-contained Windows installer and portable ZIP; no .NET SDK required for end users.
 
@@ -31,7 +31,7 @@ Paste a media path, click **Transcribe**, edit the text, and **Save TXT**. No Py
 
 **[Download the Windows installer](https://github.com/VusalAbdurahmanovX/Speech-to-text/releases/latest)** | **[Portable ZIP and checksums](https://github.com/VusalAbdurahmanovX/Speech-to-text/releases/latest)**
 
-Download **Speech-to-Text-Setup-0.1.5-win-x64.exe** from its GitHub Releases page. Run the installer and launch the app from the Start menu. The installer includes .NET; end users do not need an SDK. A portable ZIP is also generated: extract the entire folder and launch `SubtitleStudio.exe`.
+Download **Speech-to-Text-Setup-0.1.6-win-x64.exe** from its GitHub Releases page. Run the installer and launch the app from the Start menu. The installer includes .NET; end users do not need an SDK. A portable ZIP is also generated: extract the entire folder and launch `SubtitleStudio.exe`.
 
 1. Open **Settings > Tools & paths** and click **Install transcription tools**. The app downloads the official whisper.cpp CUDA build and BtbN's LGPL FFmpeg build directly from upstream. Both archives are checked against upstream SHA-256 digests before extraction.
 2. Select a model and click **Download selected model**. **large-v3-turbo** is recommended for the first run; its Q5_0 model is about 548 MiB. Model downloads are also SHA-256 checked.
@@ -103,7 +103,18 @@ Cancel stops the current FFmpeg/whisper process tree and keeps the existing text
 
 ## Models and backend
 
-Supported families are **medium**, **large-v3**, and **large-v3-turbo**. The main Models panel lists installed model files. Automatic downloads use Q5_0 variants from [ggerganov/whisper.cpp](https://huggingface.co/ggerganov/whisper.cpp). Standard files such as `ggml-medium.bin`, `ggml-large-v3.bin`, and `ggml-large-v3-turbo.bin`, and `-q*.bin` variants, are also discovered. Existing model files are not overwritten.
+Supported families are **tiny**, **medium**, **large-v1**, **large-v2**, **large-v3**, and **large-v3-turbo**. The main Models panel lists installed model files. Automatic downloads select available official files from [ggerganov/whisper.cpp](https://huggingface.co/ggerganov/whisper.cpp), preferring Q5_0, then Q5_1, then the standard model. Existing model files are not overwritten.
+
+| Model | Automatic download | Approximate size |
+| --- | --- | --- |
+| tiny | Q5_1 | 31 MiB |
+| medium | Q5_0 | 514 MiB |
+| large-v1 | Standard | 2.9 GiB |
+| large-v2 | Q5_0 | 1,031 MiB |
+| large-v3 | Q5_0 | 1,031 MiB |
+| large-v3-turbo | Q5_0 | 548 MiB |
+
+Tiny is useful for fast drafts with lower accuracy. The older large generations are named large-v1 and large-v2. Large-v1 has no official quantized download and requires substantially more memory; large-v3-turbo remains the default. Standard `ggml-<model>.bin` and quantized `ggml-<model>-q*.bin` files are discovered automatically.
 
 Tool setup pins the official whisper.cpp **b5454** asset `whisper-bin-win-cuda-12.4.0-x64.zip`. Keep all DLLs beside its executable. FFmpeg is obtained from BtbN's latest `ffmpeg-master-latest-win64-lgpl.zip`. You may instead select your own executables in Settings. For a source-built whisper.cpp backend, enable `-DGGML_CUDA=ON` in CMake.
 
@@ -152,7 +163,7 @@ You can also skip `setup.ps1` and use the app's Settings to download tools/model
 ```powershell
 .\package.ps1
 # Override version:
-.\package.ps1 -Version 0.1.5
+.\package.ps1 -Version 0.1.6
 # Portable package only:
 .\package.ps1 -SkipInstaller
 ```

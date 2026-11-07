@@ -24,6 +24,16 @@ try
     var settings = new Settings { ModelFolder = folder };
     Check(settings.ModelPath("large-v3") == null, "large-v3 must not resolve to turbo.");
     Check(settings.ModelPath("large-v3-turbo") != null, "Quantized model discovery failed.");
+    var officialFiles = new[] { "ggml-tiny-q5_1.bin", "ggml-tiny.bin", "ggml-medium-q5_0.bin", "ggml-large-v1.bin", "ggml-large-v2-q5_0.bin", "ggml-large-v2.bin", "ggml-large-v3-q5_0.bin", "ggml-large-v3-turbo-q5_0.bin" };
+    Check(ModelDownload.SelectFile("tiny", officialFiles) == "ggml-tiny-q5_1.bin", "Tiny must use its available Q5_1 download.");
+    Check(ModelDownload.SelectFile("large-v1", officialFiles) == "ggml-large-v1.bin", "Large-v1 must use the standard model when quantized files are unavailable.");
+    Check(ModelDownload.SelectFile("large-v2", officialFiles) == "ggml-large-v2-q5_0.bin", "Large-v2 should prefer Q5_0.");
+    foreach (var model in Transcriber.Models)
+    {
+        var name = ModelDownload.SelectFile(model, officialFiles);
+        File.WriteAllText(Path.Combine(folder, name), "test");
+        Check(Path.GetFileName(settings.ModelPath(model)) == name, "Model discovery chose the wrong family: " + model);
+    }
     var marker = Path.Combine(folder, "should-not-exist");
     var literal = "hello; New-Item '" + marker + "'";
     var script = Path.Combine(folder, "echo.ps1");
@@ -62,7 +72,7 @@ try
                 Check(window.Title.StartsWith("Speech to Text"), "Window product name is incorrect.");
                 Check(window.Icon != null, "App window icon was not loaded.");
                 var list = (System.Windows.Controls.ListBox)window.FindName("ModelList");
-                Check(list.Items.Count == 3, "Model library must display all supported families.");
+                Check(list.Items.Count == Transcriber.Models.Length && list.Items.Count == 6, "Model library must display all six supported families.");
                 Check(list.SelectedValue is string selected && Transcriber.Models.Contains(selected), "Selected model is missing.");
                 var button = (System.Windows.Controls.Button)window.FindName("DownloadButton");
                 Check(button.IsEnabled == (Settings.Load().ModelPath((string)list.SelectedValue) == null), "Download availability does not match installed model state.");
@@ -101,6 +111,22 @@ try
         thread.Start(); thread.Join();
         if (failure != null) throw failure;
         Console.WriteLine("PASS: WPF models, transcript state, settings tabs/preferences, rendered previews.");
+    }
+    if (args.Contains("--tiny-smoke"))
+    {
+        var preferences = Settings.Load();
+        preferences.Model = "tiny";
+        preferences.UseCuda = true;
+        var progress = new Progress<string>(Console.WriteLine);
+        if (preferences.ModelPath("tiny") == null)
+            await ModelDownload.Download("tiny", preferences.ModelFolder, progress, CancellationToken.None);
+        var outputFolder = Path.Combine(Settings.ResultsFolder, "tiny-smoke-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(outputFolder);
+        var clip = Path.Combine(outputFolder, "tiny-sample.wav");
+        await ProcessRunner.Run(preferences.FFmpegPath, ["-nostdin", "-hide_banner", "-y", "-i", Path.Combine(Settings.Root, "sample_1min.mp3"), "-t", "90", "-ar", "16000", "-ac", "1", "-c:a", "pcm_s16le", clip], CancellationToken.None);
+        var result = await new Transcriber().RunAsync(clip, preferences, outputFolder, progress, CancellationToken.None);
+        Check(result.Backend == "CUDA" && result.NvidiaProcessVerified && File.Exists(result.TxtPath), "Tiny CUDA smoke test failed.");
+        Console.WriteLine($"PASS: tiny CUDA, audio={result.AudioSeconds:F2}s, transcription={result.TranscriptionSeconds:F2}s, RTF={result.RealtimeFactor:F4}");
     }
     if (args.Contains("--install-tools"))
     {

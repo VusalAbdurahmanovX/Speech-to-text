@@ -7,15 +7,23 @@ namespace SubtitleStudio;
 
 public static class ModelDownload
 {
+    public static string SelectFile(string model, IEnumerable<string> available)
+    {
+        if (!Transcriber.Models.Contains(model)) throw new ArgumentException("Unknown model.");
+        var files = available.ToHashSet(StringComparer.Ordinal);
+        return new[] { $"ggml-{model}-q5_0.bin", $"ggml-{model}-q5_1.bin", $"ggml-{model}.bin" }.FirstOrDefault(files.Contains)
+            ?? throw new IOException($"No supported official download is available for {model}.");
+    }
     public static async Task Download(string model, string folder, IProgress<string> progress, CancellationToken token)
     {
         if (!Transcriber.Models.Contains(model)) throw new ArgumentException("Unknown model.");
         Directory.CreateDirectory(folder);
-        var name = $"ggml-{model}-q5_0.bin";
-        var path = Path.Combine(folder, name);
-        if (File.Exists(path)) throw new IOException("This model already exists. Choose another model or model folder.");
         using var client = new HttpClient { Timeout = TimeSpan.FromHours(6) };
         using var metadata = JsonDocument.Parse(await client.GetStringAsync("https://huggingface.co/api/models/ggerganov/whisper.cpp/tree/main?limit=1000", token));
+        var name = SelectFile(model, metadata.RootElement.EnumerateArray().Select(x => x.GetProperty("path").GetString()!));
+        var path = Path.Combine(folder, name);
+        if (File.Exists(path)) throw new IOException("This model already exists. Choose another model or model folder.");
+        progress.Report("Selected official model file: " + name);
         var entry = metadata.RootElement.EnumerateArray().First(x => x.GetProperty("path").GetString() == name);
         var hash = entry.GetProperty("lfs").GetProperty("oid").GetString()!;
         var size = entry.GetProperty("size").GetInt64();

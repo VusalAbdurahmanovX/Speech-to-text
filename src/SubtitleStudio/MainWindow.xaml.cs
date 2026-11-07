@@ -43,7 +43,15 @@ public partial class MainWindow : Window
                 return new
                 {
                     Name = name,
-                    Description = name == "medium" ? "Balanced accuracy" : name == "large-v3" ? "Highest accuracy" : "Fast large-model transcription",
+                    Description = name switch
+                    {
+                        "tiny" => "Lightweight / quick drafts",
+                        "medium" => "Balanced accuracy",
+                        "large-v1" => "Original large model",
+                        "large-v2" => "Second-generation large",
+                        "large-v3" => "Highest accuracy",
+                        _ => "Fast large-model transcription"
+                    },
                     Installed = path != null,
                     Status = path == null ? "Not installed" : $"Installed - {new FileInfo(path).Length / 1048576} MiB"
                 };
