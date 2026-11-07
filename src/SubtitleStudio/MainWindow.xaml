@@ -1,0 +1,42 @@
+<Window x:Class="SubtitleStudio.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ Title="Speech to Text | whisper.cpp" Width="1100" Height="760" MinWidth="860" MinHeight="620" AllowDrop="True" Drop="FileDrop" Closing="WindowClosing" Background="#F2F5F9" Foreground="#19283E">
+ <Window.Resources><ResourceDictionary Source="Styles.xaml"/></Window.Resources>
+ <DockPanel Margin="24">
+  <DockPanel DockPanel.Dock="Top" Margin="0,0,0,22">
+   <Button x:Name="MoreButton" DockPanel.Dock="Right" Content="Settings" Click="ShowSettings" VerticalAlignment="Center"/>
+   <StackPanel><TextBlock Text="Speech to Text" FontSize="27" FontWeight="SemiBold"/><TextBlock Text="Turn audio into words. Everything stays on your PC." Foreground="#69788D" Margin="0,5,0,0"/></StackPanel>
+  </DockPanel>
+  <Border DockPanel.Dock="Bottom" Style="{StaticResource Card}" Padding="16,12" Margin="0,16,0,0">
+   <StackPanel><DockPanel><TextBlock x:Name="BackendLabel" DockPanel.Dock="Right" Foreground="#2361D8" FontWeight="SemiBold" Margin="14,0,0,0"/><TextBlock x:Name="StatusLabel" Text="Ready" TextWrapping="Wrap"/></DockPanel><ProgressBar x:Name="Progress" Height="4" Margin="0,10,0,8" Maximum="100" Foreground="#2361D8" Background="#EAF0F8" BorderThickness="0"/><TextBlock x:Name="MetricsLabel" Text="Choose a file and a model to get started." FontSize="12" Foreground="#69788D" TextWrapping="Wrap"/></StackPanel>
+  </Border>
+  <Grid>
+   <Grid.ColumnDefinitions><ColumnDefinition Width="250"/><ColumnDefinition Width="18"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+   <Border Style="{StaticResource Card}" Padding="16">
+    <DockPanel>
+     <StackPanel DockPanel.Dock="Top"><TextBlock Text="Models" FontSize="18" FontWeight="SemiBold"/><TextBlock x:Name="ModelCountLabel" Foreground="#69788D" Margin="0,5,0,16"/></StackPanel>
+     <StackPanel DockPanel.Dock="Bottom" Margin="0,16,0,0"><TextBlock x:Name="ModelDetails" TextWrapping="Wrap" FontSize="11" Foreground="#69788D" Margin="0,0,0,12"/><Button x:Name="DownloadButton" Content="Download selected model" Click="DownloadSelectedModel" Padding="10"/><TextBlock Text="Downloads use verified Q5_0 models. You can choose another model at any time." FontSize="11" Foreground="#69788D" TextWrapping="Wrap" Margin="0,12,0,0"/></StackPanel>
+     <ListBox x:Name="ModelList" BorderThickness="0" Background="Transparent" SelectionChanged="ModelChanged" SelectedValuePath="Name" HorizontalContentAlignment="Stretch" AutomationProperties.Name="Transcription model">
+      <ListBox.ItemContainerStyle><Style TargetType="ListBoxItem"><Setter Property="Margin" Value="0,0,0,8"/><Setter Property="Padding" Value="10"/><Setter Property="Template"><Setter.Value><ControlTemplate TargetType="ListBoxItem"><Border x:Name="ModelCard" Padding="{TemplateBinding Padding}" CornerRadius="8" Background="#F7F9FC" BorderBrush="#E4EAF2" BorderThickness="1"><ContentPresenter/></Border><ControlTemplate.Triggers><Trigger Property="IsSelected" Value="True"><Setter TargetName="ModelCard" Property="Background" Value="#EDF3FF"/><Setter TargetName="ModelCard" Property="BorderBrush" Value="#2361D8"/></Trigger><Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="ModelCard" Property="BorderThickness" Value="2"/></Trigger></ControlTemplate.Triggers></ControlTemplate></Setter.Value></Setter></Style></ListBox.ItemContainerStyle>
+      <ListBox.ItemTemplate><DataTemplate><StackPanel><TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="14"/><TextBlock Text="{Binding Description}" Foreground="#69788D" Margin="0,5,0,8"/><TextBlock Text="{Binding Status}" FontSize="11"><TextBlock.Style><Style TargetType="TextBlock"><Setter Property="Foreground" Value="#788497"/><Style.Triggers><DataTrigger Binding="{Binding Installed}" Value="True"><Setter Property="Foreground" Value="#16754D"/></DataTrigger></Style.Triggers></Style></TextBlock.Style></TextBlock></StackPanel></DataTemplate></ListBox.ItemTemplate>
+     </ListBox>
+    </DockPanel>
+   </Border>
+   <DockPanel Grid.Column="2">
+    <Border DockPanel.Dock="Top" Style="{StaticResource Card}" Padding="18" Margin="0,0,0,16">
+     <StackPanel><TextBlock Text="Audio or video file" FontWeight="SemiBold" FontSize="14"/><TextBlock Text="MP3, WAV, M4A, MP4, MKV - browse, paste a path, or drop a file." Foreground="#69788D" FontSize="12" Margin="0,5,0,12" TextWrapping="Wrap"/>
+      <DockPanel Margin="0,0,0,14"><Button x:Name="BrowseButton" DockPanel.Dock="Right" Content="Browse..." Click="Browse" Margin="8,0,0,0"/><TextBox x:Name="InputBox" AutomationProperties.Name="Media file path" ToolTip="Paste a media path or drop a file here"/></DockPanel>
+      <WrapPanel><Button x:Name="StartButton" Content="Transcribe" Click="Start" Background="{StaticResource Accent}" Foreground="White" BorderBrush="{StaticResource Accent}" FontWeight="SemiBold" Margin="0,0,8,0"/><Button x:Name="CancelButton" Content="Cancel" Click="Cancel" IsEnabled="False"/></WrapPanel>
+     </StackPanel>
+    </Border>
+    <Border Style="{StaticResource Card}" Padding="18">
+     <DockPanel>
+      <DockPanel DockPanel.Dock="Top" Margin="0,0,0,14"><Button x:Name="SaveButton" DockPanel.Dock="Right" Content="Save TXT..." Click="SaveText" IsEnabled="False" Padding="12,7"/><StackPanel><TextBlock Text="Transcript" FontSize="18" FontWeight="SemiBold"/><TextBlock Text="Edit your text before saving." Foreground="#69788D" FontSize="12" Margin="0,4,0,0"/></StackPanel></DockPanel>
+      <Grid><TextBox x:Name="TranscriptBox" AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Top" FontSize="15" BorderThickness="0" Padding="0,6,0,0" TextChanged="TextEdited" AutomationProperties.Name="Editable transcript"/>
+       <TextBlock Text="Your transcript will appear here." Foreground="#93A0B2" Margin="0,8,0,0" IsHitTestVisible="False"><TextBlock.Style><Style TargetType="TextBlock"><Setter Property="Visibility" Value="Collapsed"/><Style.Triggers><DataTrigger Binding="{Binding Text, ElementName=TranscriptBox}" Value=""><Setter Property="Visibility" Value="Visible"/></DataTrigger></Style.Triggers></Style></TextBlock.Style></TextBlock>
+      </Grid>
+     </DockPanel>
+    </Border>
+   </DockPanel>
+  </Grid>
+ </DockPanel>
+</Window>

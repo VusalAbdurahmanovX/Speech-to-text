@@ -1,0 +1,31 @@
+name: Bug report
+description: Report a reproducible problem with the Windows app.
+title: "[Bug] "
+labels: [bug]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Explain the actual result and what you expected.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: "1. Open the app..."
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Include app version, Windows version, GPU/driver, model/quantization, and CUDA or CPU mode.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs or screenshots
+      description: Remove personal file paths and private transcript text before attaching logs. Do not attach API keys or recordings you cannot share.
