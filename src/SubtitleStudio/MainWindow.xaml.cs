@@ -145,11 +145,21 @@ public partial class MainWindow : Window
             TranscriptBox.Text = transcript;
             txtPath = result.TxtPath;
             srtPath = result.SrtPath;
+            // Keep a copy beside the input so exports are easy to find outside the app data folder.
+            var besideSrt = Path.ChangeExtension(input, ".srt");
+            try
+            {
+                File.Copy(result.SrtPath, besideSrt, true);
+                File.Copy(result.TxtPath, Path.ChangeExtension(input, ".txt"), true);
+            }
+            catch (IOException ex) { messages.Enqueue("Could not copy outputs beside input: " + ex.Message); }
+            catch (UnauthorizedAccessException ex) { messages.Enqueue("Could not copy outputs beside input: " + ex.Message); }
             dirty = false;
             UpdateProgress();
             Progress.IsIndeterminate = false; Progress.Value = 100;
             StatusLabel.Text = "Done. TXT and SRT saved automatically.";
-            MetricsLabel.Text = $"SRT: {result.SrtPath} · Audio: {TimeSpan.FromSeconds(result.AudioSeconds):hh\\:mm\\:ss} · Transcription: {result.TranscriptionSeconds:F2}s · RTF: {result.RealtimeFactor:F3} · {result.Backend}";
+            srtPath = besideSrt;
+            MetricsLabel.Text = $"SRT: {besideSrt} · Audio: {TimeSpan.FromSeconds(result.AudioSeconds):hh\\:mm\\:ss} · Transcription: {result.TranscriptionSeconds:F2}s · RTF: {result.RealtimeFactor:F3} · {result.Backend}";
 
         }
         catch (OperationCanceledException) { UpdateProgress(); StatusLabel.Text = "Cancelled"; }
