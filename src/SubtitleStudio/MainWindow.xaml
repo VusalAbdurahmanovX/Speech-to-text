@@ -31,7 +31,7 @@
     </Border>
     <Border Style="{StaticResource Card}" Padding="18">
      <DockPanel>
-      <DockPanel DockPanel.Dock="Top" Margin="0,0,0,14"><Button x:Name="SaveButton" DockPanel.Dock="Right" Content="Save TXT..." Click="SaveText" IsEnabled="False" Padding="12,7"/><StackPanel><TextBlock Text="Transcript" FontSize="18" FontWeight="SemiBold"/><TextBlock Text="Edit your text before saving." Foreground="#69788D" FontSize="12" Margin="0,4,0,0"/></StackPanel></DockPanel>
+      <DockPanel DockPanel.Dock="Top" Margin="0,0,0,14"><WrapPanel DockPanel.Dock="Right"><Button x:Name="SaveSrtButton" Content="Save SRT..." Click="SaveSrt" IsEnabled="False" Padding="12,7" Margin="0,0,8,0"/><Button x:Name="SaveButton" Content="Save TXT..." Click="SaveText" IsEnabled="False" Padding="12,7"/></WrapPanel><StackPanel><TextBlock Text="Transcript" FontSize="18" FontWeight="SemiBold"/><TextBlock Text="Edit your text before saving." Foreground="#69788D" FontSize="12" Margin="0,4,0,0"/></StackPanel></DockPanel>
       <Grid><TextBox x:Name="TranscriptBox" AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Top" FontSize="15" BorderThickness="0" Padding="0,6,0,0" TextChanged="TextEdited" AutomationProperties.Name="Editable transcript"/>
        <TextBlock Text="Your transcript will appear here." Foreground="#93A0B2" Margin="0,8,0,0" IsHitTestVisible="False"><TextBlock.Style><Style TargetType="TextBlock"><Setter Property="Visibility" Value="Collapsed"/><Style.Triggers><DataTrigger Binding="{Binding Text, ElementName=TranscriptBox}" Value=""><Setter Property="Visibility" Value="Visible"/></DataTrigger></Style.Triggers></Style></TextBlock.Style></TextBlock>
       </Grid>

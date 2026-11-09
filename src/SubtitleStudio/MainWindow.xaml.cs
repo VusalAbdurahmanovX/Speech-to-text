@@ -20,6 +20,7 @@ public partial class MainWindow : Window
     bool dirty;
     bool refreshingModels;
     string? txtPath;
+    string? srtPath;
 
     public MainWindow()
     {
@@ -143,11 +144,12 @@ public partial class MainWindow : Window
             var transcript = await File.ReadAllTextAsync(result.TxtPath);
             TranscriptBox.Text = transcript;
             txtPath = result.TxtPath;
+            srtPath = result.SrtPath;
             dirty = false;
             UpdateProgress();
             Progress.IsIndeterminate = false; Progress.Value = 100;
-            StatusLabel.Text = "Done. TXT saved automatically: " + result.TxtPath;
-            MetricsLabel.Text = $"Audio: {TimeSpan.FromSeconds(result.AudioSeconds):hh\\:mm\\:ss} · Transcription: {result.TranscriptionSeconds:F2}s · RTF: {result.RealtimeFactor:F3} · {result.Backend}";
+            StatusLabel.Text = "Done. TXT and SRT saved automatically.";
+            MetricsLabel.Text = $"SRT: {result.SrtPath} · Audio: {TimeSpan.FromSeconds(result.AudioSeconds):hh\\:mm\\:ss} · Transcription: {result.TranscriptionSeconds:F2}s · RTF: {result.RealtimeFactor:F3} · {result.Backend}";
 
         }
         catch (OperationCanceledException) { UpdateProgress(); StatusLabel.Text = "Cancelled"; }
@@ -162,6 +164,7 @@ public partial class MainWindow : Window
         TranscriptBox.IsReadOnly = busy;
         CancelButton.IsEnabled = busy;
         SaveButton.IsEnabled = !busy && !string.IsNullOrWhiteSpace(TranscriptBox.Text);
+        SaveSrtButton.IsEnabled = !busy && srtPath != null && File.Exists(srtPath);
         Progress.IsIndeterminate = busy;
         if (busy) { Progress.Value = 0; watch.Restart(); } else watch.Stop();
     }
@@ -177,6 +180,16 @@ public partial class MainWindow : Window
         {
             var dialog = new SaveFileDialog { Filter = "Text|*.txt", FileName = txtPath == null ? "transcript.txt" : Path.GetFileName(txtPath) };
             if (dialog.ShowDialog(this) == true) { SubtitleFiles.AtomicWrite(dialog.FileName, TranscriptBox.Text); dirty = false; StatusLabel.Text = "Saved: " + dialog.FileName; }
+        }
+        catch (Exception ex) { Error(ex); }
+    }
+    void SaveSrt(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            if (srtPath == null || !File.Exists(srtPath)) throw new FileNotFoundException("SRT output is not available yet.");
+            var dialog = new SaveFileDialog { Filter = "SubRip subtitles|*.srt", FileName = Path.GetFileName(srtPath) };
+            if (dialog.ShowDialog(this) == true) { File.Copy(srtPath, dialog.FileName, true); StatusLabel.Text = "Saved SRT: " + dialog.FileName; }
         }
         catch (Exception ex) { Error(ex); }
     }
