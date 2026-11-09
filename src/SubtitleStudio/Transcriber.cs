@@ -89,8 +89,17 @@ public sealed class Transcriber
             }
             if (settings.UseCuda && (cudaEvidence == 0 || pidSeen == 0))
                 throw new InvalidOperationException("CUDA could not be verified from both whisper.cpp CUDA buffers and its process in nvidia-smi. Output is not accepted as a verified CUDA run. See backend and nvidia-smi logs.");
-            if (!File.Exists(output + ".srt") || !File.Exists(output + ".txt")) throw new IOException("whisper.cpp did not generate SRT and TXT outputs.");
-            return new(input, model, settings.UseCuda ? "CUDA" : "CPU", duration, watch.Elapsed.TotalSeconds, watch.Elapsed.TotalSeconds / duration, output + ".srt", output + ".txt", pidSeen != 0);
+            // whisper.cpp flushes the two optional outputs just after the main process exits on some builds.
+            var srtPath = output + ".srt";
+            var txtPath = output + ".txt";
+            for (var attempt = 0; attempt < 20 && (!File.Exists(srtPath) || !File.Exists(txtPath)); attempt++)
+                await Task.Delay(100, token);
+            if (!File.Exists(srtPath) || !File.Exists(txtPath))
+            {
+                var files = string.Join(", ", Directory.EnumerateFiles(outputFolder).Select(Path.GetFileName));
+                throw new IOException($"whisper.cpp did not generate SRT and TXT outputs. Files found: {files}");
+            }
+            return new(input, model, settings.UseCuda ? "CUDA" : "CPU", duration, watch.Elapsed.TotalSeconds, watch.Elapsed.TotalSeconds / duration, srtPath, txtPath, pidSeen != 0);
         }
         finally { Directory.Delete(temp, true); }
     }
